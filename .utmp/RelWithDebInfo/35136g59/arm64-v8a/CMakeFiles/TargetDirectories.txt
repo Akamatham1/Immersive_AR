@@ -1,0 +1,5 @@
+/Users/abhinavkamatham/Desktop/Immersive_Brochure/.utmp/RelWithDebInfo/35136g59/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/abhinavkamatham/Desktop/Immersive_Brochure/.utmp/RelWithDebInfo/35136g59/arm64-v8a/CMakeFiles/rebuild_cache.dir
+/Users/abhinavkamatham/Desktop/Immersive_Brochure/.utmp/RelWithDebInfo/35136g59/arm64-v8a/FramePacing/CMakeFiles/swappywrapper.dir
+/Users/abhinavkamatham/Desktop/Immersive_Brochure/.utmp/RelWithDebInfo/35136g59/arm64-v8a/FramePacing/CMakeFiles/edit_cache.dir
+/Users/abhinavkamatham/Desktop/Immersive_Brochure/.utmp/RelWithDebInfo/35136g59/arm64-v8a/FramePacing/CMakeFiles/rebuild_cache.dir

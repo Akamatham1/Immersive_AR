@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -2067402452, guid: 1e108ae5f2133934f948edded555f03e, type: 3}
+  m_Script: {fileID: -2067402452, guid: 8a9a760f95896c34689febc965510927, type: 3}
   m_Name: VuforiaConfiguration
   m_EditorClassIdentifier: 
   vuforia:
     vuforiaLicenseKey: AcZIJ37/////AAABmfb/Sxl5VEEngaDxP02s17FkxGOViW2mMpimwvv53qSrl6WmKNW1GT6honoYgpmCxaTAtn/rgu+Vb0xfEWlufzwkuD+5yCqsrtNRAr1rXFqJQgm5FBq13PtgwPTgJTUqdyoEEVJYTGm73pXl31lI7Zg+4OcCAWzoEzd21mOHgdcp6Wzh50nBmXkVQdYIAtiuSxVphk4NZF3lmrlf5y5Qxf+j8j3z4cyiAL5edMPDln9aCDcNNWnyusjPU84aX7RqyAtD2OhTIiMsi7i/YdsC0nklzTpWCsrYp/FdTXx26DrU2QoRf700omjcjcVCk4NUBYAVKdLDUxI5hN0+QLJNgkVcPYSHQUiXf/8Px9zKU9hS
-    ufoLicenseKey: QVNkdmMwRC8vLy8vQUFBQUtJa1RUdy80TjBjNW8xYlBiREgxNGZWcWdaOVozVXlDcGoxVWRCWU03akxJZkt6MjZxV1N4QXdDcTVDY0VGMGRPVFhzbzdVaUoybDZyTjBKVUpFbnZDSWFxNWhLWXU3NjA5R1NIdzYwQWNuWkU0UW5KSlpDeUU2OFc2dDZzMUxueUEyWlREWDA5S0xPbjA1ckdnVVRxa2FDVU1ZbUh6Y1lSQi91cnVUSCs5UFdqN3F4M3dSb0VVaFlNKzV1SkMvQWJScXZRZnVZL0ZaVElyQXBVMFBDUnN3SjlGNEVyZnFyL0hQVTdyWnlmQjFjVklEaEJONWtoMWdZbVc4OExlT252WEZlY3ZoazB0OXV1dHBkaVNqQWlQays3RnVMcncwaWpIS2RaektzTDFZc0U2NC9JeUp1d0RzR2kyeG5uRThrVi9lZVM1VEtHa3habHNWVDhGVHBKTFpISnRjdktHTlh6YlZaR3JiM0NrZ2I=
+    ufoLicenseKey: QVZaajNLMy8vLy8vQUFBQUtGQzlYRU1mOEVLdHRuT0VwNy9MdytNRkt5Rk00OW5qTmFkT3pnK25DN0hqN0Q4T2prT2xwbCtMTUx5ZUlraEFEbitDcWw4TXVqS0dBSldUTWtlZ1Q4L09KQzROSk5oK2M4cE1nWE9LN0JRWlJ4YlJORzBRV1F1Mm5FRU9RODFxdTBxOCtHVGhiQ3dTN3BzbjNGY0VpelhJT3l1ZXZNc01XOVQ1WnovWUJKVzhFdnNvMzA4V09NV1hHQVZYRGpPaVZZMUVrZk01bG5la3N6VmtXaVhtL1J3R1hYeGlDTlY0RS9yRUVBZFNFRkRQa3FnNUpVTlBtQ2NMN0tqSnEwSU52MmNDYnFSNUxHalpVN2NaU0FGdlFGdWxlek9MbXZFUXBMK08wazBUUHI0T0plR3lEQitnY1FydGlEY1NQOFpFd25RbUVCT1gzQVpmZTVYN01ZQVl2ZHdHMTQ5Si9uVzB5TklXdjJISmdYT3Y=
     delayedInitialization: 0
     cameraFocusModeSetting: 2
     cameraDeviceModeSetting: -1
@@ -44,7 +44,7 @@ MonoBehaviour:
     autoStartTracker: 1
     arcoreRequirement: 1
     autoImportArcore: 1
-    thirdPartyARCoreClientDetected: 0
+    thirdPartyARCoreClientDetected: 1
   playmode:
     mRecordingPath: 
     playModeType: 0
@@ -52,4 +52,4 @@ MonoBehaviour:
   webcam:
     renderTextureLayer: 30
   packageInformation:
-    ARFoundationVersion: 
+    ARFoundationVersion: 6.2.0

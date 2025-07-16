@@ -6,10 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="7b7db94b-2e7b-466d-8d66-c93d4a2f1d89" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Immersive_Brochure/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Immersive_Brochure/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.utmp/RelWithDebInfo/35136g59/arm64-v8a/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.utmp/RelWithDebInfo/35136g59/arm64-v8a/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Observer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Observer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI_Manager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI_Manager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/VuforiaActivationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/VuforiaActivationController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QCAR/somedata16" beforeDir="false" afterPath="$PROJECT_DIR$/QCAR/somedata16" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +20,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/TouchRotate.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.ptc.vuforia.engine@961073a467cc/Vuforia/Scripts/DefaultObserverEventHandler.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -100,6 +101,7 @@
       <workItem from="1752382883556" duration="4269000" />
       <workItem from="1752551317056" duration="605000" />
       <workItem from="1752633683461" duration="1018000" />
+      <workItem from="1752681735437" duration="4341000" />
     </task>
     <servers />
   </component>

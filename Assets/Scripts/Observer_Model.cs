@@ -1,11 +1,3 @@
-/*==============================================================================
-Copyright (c) 2021 PTC Inc. All Rights Reserved.
-
-Confidential and Proprietary - Protected under copyright and other laws.
-Vuforia is a trademark of PTC Inc., registered in the United States and other 
-countries.
-==============================================================================*/
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,17 +6,9 @@ using UnityEngine.Events;
 using UnityEngine.Video;
 using Vuforia;
 
-/// <summary>
-/// A custom handler that implements the ITrackableEventHandler interface.
-///
-/// Changes made to this file could be overwritten when upgrading the Vuforia version.
-/// When implementing custom event handler behavior, consider inheriting from this class instead.
-/// </summary>
-public class Observer : MonoBehaviour
+public class Observer_Model : MonoBehaviour
 {
-    public VideoPlayer videoPlayer;
-    public GameObject hideUI;
- 
+    public GameObject hideModel;
     public enum TrackingStatusFilter
     {
         Tracked,
@@ -174,12 +158,8 @@ public class Observer : MonoBehaviour
         if (mObserverBehaviour)
             SetComponentsEnabled(true);
 
-        OnTargetFound?.Invoke();
-        if (videoPlayer != null && !videoPlayer.isPlaying)
-        {
-            videoPlayer.Play();
-            hideUI.SetActive(true);
-        }
+        OnTargetFound?.Invoke(); 
+        hideModel.SetActive(true);
         
     }
 
@@ -189,10 +169,9 @@ public class Observer : MonoBehaviour
             SetComponentsEnabled(false);
 
         OnTargetLost?.Invoke();
-        if (videoPlayer != null && videoPlayer.isPlaying)
+        if (hideModel.activeInHierarchy)
         {
-            videoPlayer.Pause();
-            hideUI.SetActive(false);
+            hideModel.SetActive(false);
         }
     }
 

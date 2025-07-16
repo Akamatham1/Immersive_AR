@@ -7,7 +7,8 @@ public class VuforiaActivationController : MonoBehaviour
 {
     public VuforiaBehaviour vuforiaBehaviour; // Assign the VuforiaBehaviour component here
   //  public Button activateARButton;           // Assign your button here
-    public GameObject contentToHide; // Optional: Any AR content you want to hide initially
+    public GameObject contentToHide;
+    public GameObject hide_targetAR; // Optional: Any AR content you want to hide initially
     public GameObject enable_Init_screen;
 
     void Start()
@@ -41,10 +42,11 @@ public class VuforiaActivationController : MonoBehaviour
         if (vuforiaBehaviour != null && !vuforiaBehaviour.enabled)
         {
             vuforiaBehaviour.enabled = true;
-            if (contentToHide != null)
-            {
-                contentToHide.SetActive(true);
-            }
+            hide_targetAR.SetActive(true);
+            // if (contentToHide != null)
+            // {
+            //     contentToHide.SetActive(true);
+            // }
             Debug.Log("Vuforia AR Activated!");
 
            // Optionally hide the button after activation
@@ -68,6 +70,7 @@ public class VuforiaActivationController : MonoBehaviour
             if (contentToHide != null)
             {
                 contentToHide.SetActive(false);
+                hide_targetAR.SetActive(false);
             }
             Debug.Log("Vuforia AR Deactivated!");
 

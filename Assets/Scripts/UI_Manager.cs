@@ -16,7 +16,6 @@ public class UI_Manager : MonoBehaviour
     public void disable_UI()
     {
         UI.SetActive(false);
-        buttons.SetActive(true);
     }
    
 }

@@ -23,6 +23,7 @@ using Vuforia;
 public class Observer : MonoBehaviour
 {
     public VideoPlayer videoPlayer;
+    public GameObject hideUI;
     public enum TrackingStatusFilter
     {
         Tracked,
@@ -176,6 +177,7 @@ public class Observer : MonoBehaviour
         if (videoPlayer != null && !videoPlayer.isPlaying)
         {
             videoPlayer.Play();
+            hideUI.SetActive(true);
         }
         
     }
@@ -188,7 +190,8 @@ public class Observer : MonoBehaviour
         OnTargetLost?.Invoke();
         if (videoPlayer != null && videoPlayer.isPlaying)
         {
-            videoPlayer.Pause(); 
+            videoPlayer.Pause();
+            hideUI.SetActive(false);
         }
     }
 

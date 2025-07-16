@@ -9,7 +9,6 @@ public class VuforiaActivationController : MonoBehaviour
   //  public Button activateARButton;           // Assign your button here
     public GameObject contentToHide; // Optional: Any AR content you want to hide initially
     public GameObject enable_Init_screen;
-    public GameObject hide_UI;
 
     void Start()
     {
@@ -81,7 +80,6 @@ public class VuforiaActivationController : MonoBehaviour
             if (!enable_Init_screen.activeSelf)
             {
                 enable_Init_screen.SetActive(true);
-                hide_UI.SetActive(false);
             }
         }
     }

@@ -1,0 +1,33 @@
+# Unity-generated / cache directories — large, binary, not source
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/.utmp/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Build outputs / packages
+*.apk
+*.aab
+*.unitypackage
+Assets/Editor/Migration/*.tgz
+
+# IDE / tooling cache
+.vs/
+.gradle/
+.idea/
+
+# Binary assets not useful as text context
+*.png
+*.jpg
+*.jpeg
+*.psd
+*.fbx
+*.mp4
+*.wav
+*.mp3
+*.renderTexture

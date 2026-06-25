@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class ScanningViewfinder : MonoBehaviour
@@ -10,27 +9,24 @@ public class ScanningViewfinder : MonoBehaviour
     public RectTransform cornerTR;
     public RectTransform cornerBL;
     public RectTransform cornerBR;
-    public float cornerPulseScale = 1.08f;
-    public float cornerPulseDuration = 0.9f;
+    public float cornerPulseScale = 2.5f;
+    public float cornerPulseDuration = 2f;
 
     [Header("Status label")]
     public TextMeshProUGUI statusLabel;
-    public string scanningText = "Scanning for target";
+    public string scanningText = "Scan the front of the pamphlet";
     public string foundText    = "Target found!";
+
+    [Header("Buttons to hide while scanning")]
+    public GameObject buttonsContainer;
 
     Coroutine dotCoroutine;
     Coroutine cornerCoroutine;
     bool found = false;
 
-    void OnEnable()
+    // Subscribe once for the object's lifetime so events still fire when this is inactive.
+    void Start()
     {
-        found = false;
-        if (statusLabel) statusLabel.text = scanningText + "...";
-        if (dotCoroutine  != null) StopCoroutine(dotCoroutine);
-        if (cornerCoroutine != null) StopCoroutine(cornerCoroutine);
-        dotCoroutine    = StartCoroutine(PulseDots());
-        cornerCoroutine = StartCoroutine(PulseCorners());
-
         var observer = FindFirstObjectByType<Observer>();
         if (observer != null)
         {
@@ -39,7 +35,7 @@ public class ScanningViewfinder : MonoBehaviour
         }
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         var observer = FindFirstObjectByType<Observer>();
         if (observer != null)
@@ -49,21 +45,36 @@ public class ScanningViewfinder : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        found = false;
+        if (buttonsContainer != null) buttonsContainer.SetActive(false);
+        if (statusLabel) statusLabel.text = scanningText + "...";
+        if (dotCoroutine    != null) StopCoroutine(dotCoroutine);
+        if (cornerCoroutine != null) StopCoroutine(cornerCoroutine);
+        dotCoroutine    = StartCoroutine(PulseDots());
+        cornerCoroutine = StartCoroutine(PulseCorners());
+    }
+
+    void OnDisable()
+    {
+        if (dotCoroutine    != null) { StopCoroutine(dotCoroutine);    dotCoroutine    = null; }
+        if (cornerCoroutine != null) { StopCoroutine(cornerCoroutine); cornerCoroutine = null; }
+    }
+
     void OnTargetFound()
     {
         found = true;
         if (statusLabel) statusLabel.text = foundText;
         if (dotCoroutine != null) { StopCoroutine(dotCoroutine); dotCoroutine = null; }
-        StartCoroutine(HideAfterDelay(1f));
+        if (buttonsContainer != null) buttonsContainer.SetActive(true);
+        StartCoroutine(HideAfterDelay(0.01f));
     }
 
     void OnTargetLost()
     {
         found = false;
-        gameObject.SetActive(true);
-        if (statusLabel) statusLabel.text = scanningText + "...";
-        if (dotCoroutine == null) dotCoroutine = StartCoroutine(PulseDots());
-        if (cornerCoroutine == null) cornerCoroutine = StartCoroutine(PulseCorners());
+        gameObject.SetActive(true); // triggers OnEnable: hides buttons, resets text, restarts coroutines
     }
 
     IEnumerator HideAfterDelay(float delay)
@@ -72,7 +83,6 @@ public class ScanningViewfinder : MonoBehaviour
         if (found) gameObject.SetActive(false);
     }
 
-    // Animates "Scanning..." -> "Scanning." -> "Scanning.." -> "Scanning..."
     IEnumerator PulseDots()
     {
         int dots = 0;
@@ -85,13 +95,11 @@ public class ScanningViewfinder : MonoBehaviour
         }
     }
 
-    // Gentle scale pulse on all four corners in sync
     IEnumerator PulseCorners()
     {
         RectTransform[] corners = { cornerTL, cornerTR, cornerBL, cornerBR };
         while (true)
         {
-            // Scale up
             for (float t = 0f; t < 1f; t += Time.deltaTime / (cornerPulseDuration * 0.5f))
             {
                 float s = Mathf.Lerp(1f, cornerPulseScale, EaseInOutSine(t));
@@ -99,7 +107,6 @@ public class ScanningViewfinder : MonoBehaviour
                     if (c) c.localScale = Vector3.one * s;
                 yield return null;
             }
-            // Scale back
             for (float t = 0f; t < 1f; t += Time.deltaTime / (cornerPulseDuration * 0.5f))
             {
                 float s = Mathf.Lerp(cornerPulseScale, 1f, EaseInOutSine(t));

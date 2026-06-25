@@ -7,7 +7,7 @@ public class ARVideoPlayerController : MonoBehaviour
 {
     public VideoPlayer videoPlayer;
     public Button playButton;
-    public Button pauseButton;
+    Button pauseButton;
 
     // If using a 3D object to display the video, assign it here
     public Renderer targetRenderer; // e.g., a Plane, Quad

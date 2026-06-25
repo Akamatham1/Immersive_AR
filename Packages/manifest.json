@@ -1,8 +1,9 @@
 {
-  "dependencies": {
-    "com.ptc.vuforia.engine": "file:../Assets/Editor/Migration/com.ptc.vuforia.engine-11.4.4.tgz",
-    "com.unity.2d.sprite": "1.0.0",
-    "com.unity.ai.navigation": "2.0.8",
+    "dependencies": {
+    "com.ptc.vuforia.engine": "file:com.ptc.vuforia.engine-11.4.4.tgz",
+    "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main",
+"com.unity.2d.sprite": "1.0.0",
+    "com.unity.ai.navigation": "2.0.13",
     "com.unity.collab-proxy": "2.8.2",
     "com.unity.device-simulator.devices": "1.0.0",
     "com.unity.feature.development": "1.0.2",

@@ -1,40 +1,24 @@
 using UnityEngine;
-using UnityEngine.InputSystem.Android;
-using UnityEngine.UI;
-using Vuforia; // Required for VuforiaBehaviour
+using Vuforia;
 
 public class VuforiaActivationController : MonoBehaviour
 {
-    public VuforiaBehaviour vuforiaBehaviour; // Assign the VuforiaBehaviour component here
-  //  public Button activateARButton;           // Assign your button here
+    public VuforiaBehaviour vuforiaBehaviour;
     public GameObject contentToHide;
-    public GameObject hide_targetAR; // Optional: Any AR content you want to hide initially
+    public GameObject hide_targetAR;
     public GameObject enable_Init_screen;
+    public GameObject scanningViewfinder;
 
     void Start()
     {
-        // Ensure components are assigned
         if (vuforiaBehaviour == null)
-        {
-            // Try to find the VuforiaBehaviour if not assigned
-            vuforiaBehaviour = FindObjectOfType<VuforiaBehaviour>();
-        }
+            vuforiaBehaviour = FindFirstObjectByType<VuforiaBehaviour>();
 
-        // Initially disable Vuforia if it wasn't already disabled in the Inspector
         if (vuforiaBehaviour != null)
-        {
             vuforiaBehaviour.enabled = false;
-        }
-        if (contentToHide != null)
-        {
-            contentToHide.SetActive(false);
-        }
 
-        // Add listener to the button
-        // if (activateARButton != null)
-        // {
-        //     activateARButton.onClick.AddListener(ActivateVuforia);
-        // }
+        if (contentToHide != null)
+            contentToHide.SetActive(false);
     }
 
     public void ActivateVuforia()
@@ -43,17 +27,8 @@ public class VuforiaActivationController : MonoBehaviour
         {
             vuforiaBehaviour.enabled = true;
             hide_targetAR.SetActive(true);
-            // if (contentToHide != null)
-            // {
-            //     contentToHide.SetActive(true);
-            // }
+            if (scanningViewfinder != null) scanningViewfinder.SetActive(true);
             Debug.Log("Vuforia AR Activated!");
-
-           // Optionally hide the button after activation
-            // if (activateARButton != null)
-            // {
-            //     activateARButton.gameObject.SetActive(false);
-            // }
         }
         else
         {
@@ -61,7 +36,6 @@ public class VuforiaActivationController : MonoBehaviour
         }
     }
 
-    // Optional: A method to disable Vuforia again (e.g., for a "turn off AR" button)
     public void DeactivateVuforia()
     {
         if (vuforiaBehaviour != null && vuforiaBehaviour.enabled)
@@ -74,16 +48,9 @@ public class VuforiaActivationController : MonoBehaviour
             }
             Debug.Log("Vuforia AR Deactivated!");
 
-            // Show the activation button again
-            // if (activateARButton != null)
-            // {
-            //     activateARButton.gameObject.SetActive(true);
-            // }
-
-            if (!enable_Init_screen.activeSelf)
-            {
+            if (enable_Init_screen != null && !enable_Init_screen.activeSelf)
                 enable_Init_screen.SetActive(true);
-            }
+            if (scanningViewfinder != null) scanningViewfinder.SetActive(false);
         }
     }
 }

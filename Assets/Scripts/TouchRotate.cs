@@ -1,5 +1,4 @@
 using UnityEngine;
-using Vuforia; // Make sure to include Vuforia namespace
 
 public class TouchRotate : MonoBehaviour
 {

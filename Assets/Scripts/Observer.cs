@@ -50,7 +50,10 @@ public class Observer : MonoBehaviour
     protected ObserverBehaviour mObserverBehaviour;
     protected TargetStatus mPreviousTargetStatus = TargetStatus.NotObserved;
     protected bool mCallbackReceivedOnce;
-    
+
+    bool mPausedByTracking = false;
+    bool mHasPlayedOnce    = false;
+
     const float LERP_DURATION = 0.3f;
 
     PoseSmoother mPoseSmoother;
@@ -175,12 +178,15 @@ public class Observer : MonoBehaviour
             SetComponentsEnabled(true);
 
         OnTargetFound?.Invoke();
-        if (videoPlayer != null && !videoPlayer.isPlaying)
+
+        if (videoPlayer != null && (mPausedByTracking || !mHasPlayedOnce))
         {
             videoPlayer.Play();
-            hideUI.SetActive(true);
+            mHasPlayedOnce    = true;
+            mPausedByTracking = false;
         }
-        
+
+        if (hideUI != null) hideUI.SetActive(true);
     }
 
     protected virtual void OnTrackingLost()
@@ -189,11 +195,14 @@ public class Observer : MonoBehaviour
             SetComponentsEnabled(false);
 
         OnTargetLost?.Invoke();
+
         if (videoPlayer != null && videoPlayer.isPlaying)
         {
             videoPlayer.Pause();
-            hideUI.SetActive(false);
+            mPausedByTracking = true;
         }
+
+        if (hideUI != null) hideUI.SetActive(false);
     }
 
     protected void SetupPoseSmoothing()

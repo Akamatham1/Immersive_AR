@@ -1,27 +1,59 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Video;
 
 public class LivePlayer : MonoBehaviour
 {
     public VideoPlayer videoPlayer;
-    public GameObject errorOverlay;  // assign a UI Text/Panel GameObject in the Inspector
+    public GameObject errorOverlay;
+
+    [SerializeField] float retryDelay = 5f;
+    [SerializeField] string videoFileName = "video.mp4";
+
+    string StreamUrl => System.IO.Path.Combine(Application.streamingAssetsPath, videoFileName);
 
     void Start()
     {
         if (errorOverlay != null) errorOverlay.SetActive(false);
 
+        // Render video directly onto this quad's material — no RenderTexture asset needed.
+        videoPlayer.renderMode              = VideoRenderMode.MaterialOverride;
+        videoPlayer.targetMaterialRenderer  = GetComponent<Renderer>();
+        videoPlayer.targetMaterialProperty  = "_MainTex";
+        videoPlayer.playOnAwake             = false;
+
+        BeginStream();
+    }
+
+    void BeginStream()
+    {
+        videoPlayer.prepareCompleted -= OnPrepared;
+        videoPlayer.errorReceived    -= OnError;
+
         videoPlayer.source = VideoSource.Url;
-        videoPlayer.url = "https://wmse-us-ea1.wetmet.net/live/202-10-01/chunks.m3u8?nimblesessionid=29345816&wmsAuthSign=c2VydmVyX3RpbWU9Mi8xNi8yMDI2IDg6Mjc6MzYgUE0maGFzaF92YWx1ZT1xSDNKSUhST1BERHBBc2VGdHJwMklRPT0mdmFsaWRtaW51dGVzPTMw";
-        videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+        videoPlayer.url    = StreamUrl;
+
+        videoPlayer.prepareCompleted += OnPrepared;
+        videoPlayer.errorReceived    += OnError;
+
         videoPlayer.Prepare();
+    }
 
-        videoPlayer.prepareCompleted += (vp) => vp.Play();
+    void OnPrepared(VideoPlayer vp)
+    {
+        if (errorOverlay != null) errorOverlay.SetActive(false);
+        // Don't Play() here — Observer.cs calls Play()/Pause() based on tracking state.
+    }
 
-        videoPlayer.errorReceived += (vp, msg) =>
-        {
-            Debug.LogError("Video Error: " + msg);
-            if (errorOverlay != null) errorOverlay.SetActive(true);
-        };
+    void OnError(VideoPlayer vp, string msg)
+    {
+        Debug.LogError($"Video error: {msg}");
+        if (errorOverlay != null) errorOverlay.SetActive(true);
+        Invoke(nameof(Retry), retryDelay);
+    }
+
+    void Retry()
+    {
+        videoPlayer.Stop();
+        BeginStream();
     }
 }

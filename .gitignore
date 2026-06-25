@@ -72,3 +72,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Assets/Editor/Migration/*.tgz
+
+# Large video files in StreamingAssets — store externally (Mux, Cloudflare, etc.)
+Assets/StreamingAssets/*.mp4
+Assets/StreamingAssets/*.mov
+Assets/StreamingAssets/*.avi

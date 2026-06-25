@@ -1231,6 +1231,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 575636811}
   errorOverlay: {fileID: 0}
+  retryDelay: 5
+  videoFileName: video.mp4
 --- !u!114 &575636813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1412,7 +1414,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 752847436}
-  - component: {fileID: 752847435}
   m_Layer: 0
   m_Name: VideoPlayerManager
   m_TagString: Untagged
@@ -1420,22 +1421,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &752847435
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752847434}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 316e8145ca7c44cf8b6f65c3c06a1624, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  videoPlayer: {fileID: 575636811}
-  playButton: {fileID: 2060801195}
-  pauseButton: {fileID: 0}
-  targetRenderer: {fileID: 575636807}
 --- !u!4 &752847436
 Transform:
   m_ObjectHideFlags: 0

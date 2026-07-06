@@ -15,11 +15,22 @@ public class LivePlayer : MonoBehaviour
     {
         if (errorOverlay != null) errorOverlay.SetActive(false);
 
-        // Render video directly onto this quad's material — no RenderTexture asset needed.
-        videoPlayer.renderMode              = VideoRenderMode.MaterialOverride;
-        videoPlayer.targetMaterialRenderer  = GetComponent<Renderer>();
-        videoPlayer.targetMaterialProperty  = "_MainTex";
-        videoPlayer.playOnAwake             = false;
+        videoPlayer.playOnAwake = false;
+
+        if (videoPlayer.targetTexture != null)
+        {
+            // RenderTexture mode: one RT feeds both the quad material and any UI RawImage.
+            videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+            var r = GetComponent<Renderer>();
+            if (r != null) r.material.mainTexture = videoPlayer.targetTexture;
+        }
+        else
+        {
+            // Fallback: render directly onto this quad's material.
+            videoPlayer.renderMode             = VideoRenderMode.MaterialOverride;
+            videoPlayer.targetMaterialRenderer = GetComponent<Renderer>();
+            videoPlayer.targetMaterialProperty = "_MainTex";
+        }
 
         BeginStream();
     }

@@ -46,6 +46,13 @@ public class Observer : MonoBehaviour
     public UnityEvent OnTargetFound = new();
     public UnityEvent OnTargetLost = new();
 
+    /// <summary>
+    /// While true, tracking changes still fire OnTargetFound/OnTargetLost but
+    /// no longer pause/play the video or toggle hideUI. Set by
+    /// FullscreenVideoToggle so fullscreen playback survives tracking loss.
+    /// </summary>
+    [NonSerialized] public bool SuppressTrackingReactions;
+
 
     protected ObserverBehaviour mObserverBehaviour;
     protected TargetStatus mPreviousTargetStatus = TargetStatus.NotObserved;
@@ -179,6 +186,9 @@ public class Observer : MonoBehaviour
 
         OnTargetFound?.Invoke();
 
+        if (SuppressTrackingReactions)
+            return;
+
         if (videoPlayer != null && (mPausedByTracking || !mHasPlayedOnce))
         {
             videoPlayer.Play();
@@ -196,6 +206,9 @@ public class Observer : MonoBehaviour
 
         OnTargetLost?.Invoke();
 
+        if (SuppressTrackingReactions)
+            return;
+
         if (videoPlayer != null && videoPlayer.isPlaying)
         {
             videoPlayer.Pause();
@@ -203,6 +216,20 @@ public class Observer : MonoBehaviour
         }
 
         if (hideUI != null) hideUI.SetActive(false);
+    }
+
+    /// <summary>
+    /// Pauses the video as if tracking had been lost, so it auto-resumes the
+    /// next time the target is found. Called by FullscreenVideoToggle when the
+    /// user exits fullscreen while the target is no longer visible.
+    /// </summary>
+    public void PauseVideoUntilTargetFound()
+    {
+        if (videoPlayer != null && videoPlayer.isPlaying)
+        {
+            videoPlayer.Pause();
+            mPausedByTracking = true;
+        }
     }
 
     protected void SetupPoseSmoothing()

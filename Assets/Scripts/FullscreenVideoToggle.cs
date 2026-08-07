@@ -27,8 +27,11 @@ public class FullscreenVideoToggle : MonoBehaviour
     public Button fullscreenButton;
     public GameObject[] uiPanelsToHide;
 
-    [Header("Overlay root (VideoDisplay + FullscreenButton parent)")]
+    [Header("Overlay root (VideoDisplay parent)")]
     public GameObject videoOverlay;
+
+    [Tooltip("Icon for the exit-fullscreen button shown top-right in fullscreen mode.")]
+    public Sprite minimizeSprite;
 
     [Header("Normal-Mode Layout")]
     public Vector2 normalSize    = new Vector2(400f, 225f);
@@ -36,7 +39,6 @@ public class FullscreenVideoToggle : MonoBehaviour
 
     const float  ANIM_DURATION    = 0.3f;
     const float  ROTATION_TIMEOUT = 1f;
-    const string LABEL_ENTER      = "⛶ Fullscreen";
 
     bool            _isFullscreen;
     bool            _targetVisible;
@@ -64,12 +66,6 @@ public class FullscreenVideoToggle : MonoBehaviour
         Canvas canvas = GetComponentInParent<Canvas>();
         if (canvas != null)
             _canvasRect = canvas.GetComponent<RectTransform>();
-
-        TextMeshProUGUI buttonLabel = fullscreenButton != null
-            ? fullscreenButton.GetComponentInChildren<TextMeshProUGUI>()
-            : null;
-        if (buttonLabel != null)
-            buttonLabel.text = LABEL_ENTER;
 
         if (videoRect != null)
         {
@@ -134,7 +130,10 @@ public class FullscreenVideoToggle : MonoBehaviour
     {
         if (videoOverlay != null)
             videoOverlay.SetActive(visible);
-        else if (fullscreenButton != null)
+
+        // The button lives in the shared bottom button bar, not under the
+        // overlay root, so it is toggled separately.
+        if (fullscreenButton != null)
             fullscreenButton.gameObject.SetActive(visible);
 
         // The video window itself only shows while fullscreen; in normal mode
@@ -263,11 +262,11 @@ public class FullscreenVideoToggle : MonoBehaviour
 
     void SetLandscape(bool landscape)
     {
-        Screen.autorotateToPortrait           = !landscape;
-        Screen.autorotateToPortraitUpsideDown = !landscape;
-        Screen.autorotateToLandscapeLeft      = true;
-        Screen.autorotateToLandscapeRight     = true;
-        Screen.orientation = ScreenOrientation.AutoRotation;
+        // Force the target orientation directly — relying on autorotation
+        // alone does nothing when the device's rotation lock is enabled.
+        Screen.orientation = landscape
+            ? ScreenOrientation.LandscapeLeft
+            : ScreenOrientation.Portrait;
     }
 
     IEnumerator WaitForOrientation(bool landscape)
@@ -282,6 +281,15 @@ public class FullscreenVideoToggle : MonoBehaviour
             yield return null;
         }
         yield return null; // let the canvas rect settle
+
+        // Hand control back to autorotation, constrained to the orientations
+        // that fit the current mode (the forced switch above still holds if
+        // the OS rotation lock keeps autorotation from acting).
+        Screen.autorotateToPortrait           = !landscape;
+        Screen.autorotateToPortraitUpsideDown = !landscape;
+        Screen.autorotateToLandscapeLeft      = landscape;
+        Screen.autorotateToLandscapeRight     = landscape;
+        Screen.orientation = ScreenOrientation.AutoRotation;
     }
 
     // ── Fullscreen controls ───────────────────────────────────────────────────
@@ -293,8 +301,24 @@ public class FullscreenVideoToggle : MonoBehaviour
         Stretch(root);
         _controlsRoot = root.gameObject;
 
-        // Quit button, top-right
-        Button quit = MakeButton(root, "QuitButton", "✕ Exit", new Vector2(220f, 90f), 40f);
+        // Exit-fullscreen button, top-right: minimize icon (text fallback
+        // when no sprite is assigned)
+        Button quit;
+        if (minimizeSprite != null)
+        {
+            RectTransform iconRect = MakeRect("MinimizeButton", root);
+            iconRect.sizeDelta = new Vector2(100f, 100f);
+            Image icon = iconRect.gameObject.AddComponent<Image>();
+            icon.sprite         = minimizeSprite;
+            icon.color          = Color.white;
+            icon.preserveAspect = true;
+            quit = iconRect.gameObject.AddComponent<Button>();
+            quit.targetGraphic = icon;
+        }
+        else
+        {
+            quit = MakeButton(root, "MinimizeButton", "✕ Exit", new Vector2(220f, 90f), 40f);
+        }
         var quitRect = (RectTransform)quit.transform;
         quitRect.anchorMin = quitRect.anchorMax = quitRect.pivot = Vector2.one;
         quitRect.anchoredPosition = new Vector2(-30f, -30f);

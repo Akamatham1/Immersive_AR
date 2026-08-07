@@ -53,7 +53,7 @@ public class WeatherPanelBuilder : EditorWindow
         headerBg.color = new Color(0.09f, 0.45f, 0.95f, 1f); // vivid blue
 
         // Station label
-        TextMeshProUGUI stationLabel = CreateTMP(header, "StationLabel", "📍 LIT BEAUMONT — LIVE WEATHER", 13);
+        TextMeshProUGUI stationLabel = CreateTMP(header, "StationLabel", "LIT BEAUMONT — LIVE WEATHER", 13);
         RectTransform slRect = stationLabel.GetComponent<RectTransform>();
         slRect.anchorMin = Vector2.zero;
         slRect.anchorMax = Vector2.one;
@@ -99,7 +99,7 @@ public class WeatherPanelBuilder : EditorWindow
 
         // ── Bottom Row: Wind | Humidity ───────────────────────────────────
         // Wind icon + text
-        TextMeshProUGUI windText = CreateTMP(panel, "WindText", "💨  –– mph ––", 15);
+        TextMeshProUGUI windText = CreateTMP(panel, "WindText", "Wind: –– mph", 15);
         RectTransform windRect = windText.GetComponent<RectTransform>();
         windRect.anchorMin = new Vector2(0f, 0.08f);
         windRect.anchorMax = new Vector2(0.5f, 0.40f);
@@ -109,7 +109,7 @@ public class WeatherPanelBuilder : EditorWindow
         windText.color = new Color(0.85f, 0.95f, 1f, 1f);
 
         // Humidity icon + text
-        TextMeshProUGUI humidityText = CreateTMP(panel, "HumidityText", "💧  ––%", 15);
+        TextMeshProUGUI humidityText = CreateTMP(panel, "HumidityText", "Humidity: ––%", 15);
         RectTransform humRect = humidityText.GetComponent<RectTransform>();
         humRect.anchorMin = new Vector2(0.5f, 0.08f);
         humRect.anchorMax = new Vector2(1f, 0.40f);

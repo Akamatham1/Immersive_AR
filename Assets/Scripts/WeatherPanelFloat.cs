@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class WeatherPanelFloat : MonoBehaviour
 {
-    public float amplitude = 0.004f;
-    public float speed = 0.7f;
+    public float amplitude = 0.03f;
+    public float speed = 1.5f;
 
     Vector3 origin;
 

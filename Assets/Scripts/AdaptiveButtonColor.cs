@@ -21,6 +21,12 @@ public class AdaptiveButtonColor : MonoBehaviour
     [SerializeField] float transitionSpeed  = 8f;
     [SerializeField] float sampleInterval   = 0.15f;
 
+    [Header("Saturation Adaptation")]
+    [Tooltip("How strongly button saturation follows the environment's saturation (0 = always neutral).")]
+    [SerializeField, Range(0f, 1f)] float saturationResponse = 0.6f;
+    [Tooltip("Upper bound on button tint saturation so labels stay legible.")]
+    [SerializeField, Range(0f, 1f)] float maxTintSaturation  = 0.35f;
+
     Image[]           _images;
     TextMeshProUGUI[] _labels;
     Color[]           _targetButton;
@@ -94,8 +100,20 @@ public class AdaptiveButtonColor : MonoBehaviour
             float brightness = (c.r * 0.299f) + (c.g * 0.587f) + (c.b * 0.114f);
             bool  isLight    = brightness > 0.5f;
 
-            _targetButton[i] = isLight ? darkButtonColor  : lightButtonColor;
-            _targetText[i]   = isLight ? Color.white      : Color.black;
+            Color baseColor = isLight ? darkButtonColor : lightButtonColor;
+
+            // Tint the base color toward the environment's hue, scaled by how
+            // saturated the environment actually is, so buttons blend into
+            // colorful scenes but stay neutral against grey/white backgrounds.
+            Color.RGBToHSV(c, out float envHue, out float envSat, out _);
+            Color.RGBToHSV(baseColor, out _, out _, out float baseVal);
+            float tintSat = Mathf.Min(envSat * saturationResponse, maxTintSaturation);
+
+            Color tinted = Color.HSVToRGB(envHue, tintSat, baseVal);
+            tinted.a = baseColor.a;
+
+            _targetButton[i] = tinted;
+            _targetText[i]   = isLight ? Color.white : Color.black;
         }
     }
 

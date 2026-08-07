@@ -570,7 +570,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &273383988
 RectTransform:
   m_ObjectHideFlags: 0
@@ -814,6 +814,7 @@ MonoBehaviour:
   - {fileID: 1673850369}
   - {fileID: 341040586}
   videoOverlay: {fileID: 1718857634}
+  minimizeSprite: {fileID: -1500244264, guid: 73a22f9bad0cc5145aa97d635be4e88d, type: 3}
   normalSize: {x: 400, y: 225}
   normalPadding: {x: 20, y: 20}
 --- !u!1 &287347423
@@ -948,7 +949,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\U0001F4A8  \u2013\u2013 mph \u2013\u2013"
+  m_text: "Wind: \u2013\u2013 mph"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1142,7 +1143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58123d901a383b7408043d426061f79b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amplitude: 0.7
+  amplitude: 0.03
   speed: 1.5
 --- !u!1 &362529823
 GameObject:
@@ -1204,8 +1205,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4aecbac3e6442b6bc3ce75c177b714, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 10
+  rotationSpeed: 2
   lockXAxis: 1
+  deadZoneAngle: 10
+  followAmount: 0.5
+  maxSwingAngle: 30
 --- !u!114 &362529826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1477,6 +1481,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 0.5
+  videoPlayer: {fileID: 0}
+  returnSpeed: 360
 --- !u!1 &639371032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1662,18 +1668,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 784915712}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 273383988}
-  m_Father: {fileID: 1718857635}
+  m_Father: {fileID: 1673850370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -860, y: -1784.5386}
-  m_SizeDelta: {x: 160, y: 40}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 391}
+  m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &784915714
 MonoBehaviour:
@@ -1732,16 +1738,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08, g: 0.08, b: 0.08, a: 0.85}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 1780956180, guid: 22206be88bafb6248a4af44cdb61018b, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1814,7 +1820,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\U0001F4A7  \u2013\u2013%"
+  m_text: "Humidity: \u2013\u2013%"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2358,7 +2364,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\U0001F4CD LIT BEAUMONT \u2014 LIVE WEATHER"
+  m_text: "LIT BEAUMONT \u2014 LIVE WEATHER"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3181,6 +3187,7 @@ RectTransform:
   m_Children:
   - {fileID: 2060801194}
   - {fileID: 1856568887}
+  - {fileID: 784915713}
   m_Father: {fileID: 1353510522}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3212,6 +3219,7 @@ MonoBehaviour:
   buttons:
   - {fileID: 2060801195}
   - {fileID: 1856568888}
+  - {fileID: 784915714}
   darkButtonColor: {r: 0.1, g: 0.1, b: 0.1, a: 0.85}
   lightButtonColor: {r: 0.95, g: 0.95, b: 0.95, a: 0.85}
   transitionSpeed: 3
@@ -3676,7 +3684,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 33421312}
-  - {fileID: 784915713}
   m_Father: {fileID: 285818303}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4002,9 +4009,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1673850370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 440, y: -1489.3}
+  m_AnchorMin: {x: 0.75, y: 0}
+  m_AnchorMax: {x: 0.75, y: 0}
+  m_AnchoredPosition: {x: 0, y: 391}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1856568888
@@ -4795,9 +4802,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1673850370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -472, y: -1487}
+  m_AnchorMin: {x: 0.25, y: 0}
+  m_AnchorMax: {x: 0.25, y: 0}
+  m_AnchoredPosition: {x: 0, y: 391}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2060801195

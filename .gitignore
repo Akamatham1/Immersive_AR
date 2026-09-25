@@ -78,3 +78,13 @@ Packages/*.tgz
 Assets/StreamingAssets/*.mp4
 Assets/StreamingAssets/*.mov
 Assets/StreamingAssets/*.avi
+
+# Vuforia configuration holds the license key. Each developer supplies their own.
+Assets/Resources/VuforiaConfiguration.asset
+Assets/Resources/VuforiaConfiguration.asset.meta
+
+# Editor / OS files
+.DS_Store
+.idea/
+.utmp/
+.vscode/

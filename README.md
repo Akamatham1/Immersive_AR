@@ -96,6 +96,7 @@ Assets/
 2. Open in Unity Hub — select Unity 6000.0.53f1
 3. Open `Assets/Scenes/ARScene.unity`
 4. Place the Vuforia Engine tarball at `Packages/com.ptc.vuforia.engine-11.4.4.tgz` (it is gitignored, not in the repo — download it from the [Vuforia developer portal](https://developer.vuforia.com/downloads/sdk); the editor migration helper in `Assets/Editor/Migration/` also offers to set it up)
+5. Supply your own Vuforia license key. The key lives in `Assets/Resources/VuforiaConfiguration.asset`, which is gitignored and not included in the repo. Get a free Basic key from the [Vuforia License Manager](https://developer.vuforia.com/license-manager), then paste it into **Vuforia Engine Configuration → App License Key** (open it from the `ARCamera`'s Vuforia Behaviour, or via **Window → Vuforia Configuration**). Unity creates the asset the first time you do this.
 
 ### Building
 
@@ -132,5 +133,13 @@ Development captures are in `Assets/Screenshots/`. On-device recordings better r
 ## Notes
 
 - The weather panel lat/lon is hardcoded in `WeatherManager.cs` — update it for a different location
-- Vuforia licence key is stored in `Assets/Resources/VuforiaConfiguration.asset`
+- Vuforia license key is stored in `Assets/Resources/VuforiaConfiguration.asset`, which is gitignored (see Setup)
 - `Assets/Editor/WeatherPanelBuilder.cs` can regenerate the weather UI hierarchy via **Tools → Create Weather Panel**
+
+---
+
+## License
+
+This project is released under the MIT License. See [LICENSE](LICENSE) for details.
+
+Third-party components keep their own licenses. This includes Vuforia Engine, Unity packages, and the Open-Meteo API.

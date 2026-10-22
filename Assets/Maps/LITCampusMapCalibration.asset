@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c573bd1ba4e2370489891f58162d6963, type: 3}
+  m_Name: LITCampusMapCalibration
+  m_EditorClassIdentifier: 
+  imageSize: {x: 1000, y: 670}
+  points:
+  - label: 1
+    pixel: {x: 370, y: 56}
+    latitude: 30.049565
+    longitude: -94.0789429
+  - label: 2
+    pixel: {x: 249, y: 447}
+    latitude: 30.0468372
+    longitude: -94.0801092
+  - label: 3
+    pixel: {x: 365, y: 447}
+    latitude: 30.0467464
+    longitude: -94.079296
+  - label: 4
+    pixel: {x: 362, y: 571}
+    latitude: 30.0460008
+    longitude: -94.0791904
+  - label: 5
+    pixel: {x: 568, y: 224}
+    latitude: 30.048376
+    longitude: -94.0775358
+  - label: 6
+    pixel: {x: 666, y: 343}
+    latitude: 30.0475451
+    longitude: -94.0768575
+  - label: 7
+    pixel: {x: 830, y: 144}
+    latitude: 30.0489474
+    longitude: -94.0755593
+  - label: 6
+    pixel: {x: 249, y: 447}
+    latitude: 30.0468372
+    longitude: -94.0801092
+  outlierFactor: 2

@@ -2,10 +2,20 @@ using System.Collections;
 using UnityEngine;
 
 // Attach to WeatherPanel (NOT CanvasWeather) — animates UI localScale (1,1,1), not world scale.
+//
+// SETUP
+//  - Add to any UI panel under the image target's world-space canvas (e.g.
+//    WeatherPanel, MapPanel). It finds the parent Observer on its own and
+//    scales in on target found / out on target lost.
+//  - startDelay: seconds to wait before the entrance starts. Set MapPanel to
+//    ~0.1 with WeatherPanel at 0 for a staggered entrance. Exits are never
+//    delayed. At 0 (the default) behaviour is exactly as before.
 public class WeatherPanelEntrance : MonoBehaviour
 {
     public float enterDuration = 0.45f;
     public float exitDuration  = 0.2f;
+    [Tooltip("Seconds to wait before the entrance animation starts (0 = immediate). Exit is never delayed.")]
+    public float startDelay    = 0f;
 
     Coroutine current;
 
@@ -24,7 +34,15 @@ public class WeatherPanelEntrance : MonoBehaviour
     public void PlayEntrance()
     {
         if (current != null) StopCoroutine(current);
-        current = StartCoroutine(ScaleTo(Vector3.one, enterDuration, overshoot: true));
+        current = startDelay > 0f
+            ? StartCoroutine(DelayedEntrance())
+            : StartCoroutine(ScaleTo(Vector3.one, enterDuration, overshoot: true));
+    }
+
+    IEnumerator DelayedEntrance()
+    {
+        yield return new WaitForSeconds(startDelay);
+        yield return ScaleTo(Vector3.one, enterDuration, overshoot: true);
     }
 
     public void PlayExit()

@@ -26,6 +26,9 @@ public class FullscreenVideoToggle : MonoBehaviour
     public RectTransform videoRect;
     public Button fullscreenButton;
     public GameObject[] uiPanelsToHide;
+    [Tooltip("The video target's Observer (ImageTarget_Video). Needed when the scene has more " +
+             "than one Observer; otherwise the first one found is used.")]
+    public Observer observer;
 
     [Header("Overlay root (VideoDisplay parent)")]
     public GameObject videoOverlay;
@@ -47,7 +50,6 @@ public class FullscreenVideoToggle : MonoBehaviour
     Coroutine       _transition;
     bool[]          _panelStates;
 
-    Observer    _observer;
     VideoPlayer _videoPlayer;
 
     // Runtime-built fullscreen controls
@@ -57,6 +59,8 @@ public class FullscreenVideoToggle : MonoBehaviour
     Slider          _progress;
     bool            _scrubbing;
     int             _lastShownSecond = -1;
+
+    Observer _observer;
 
     void Start()
     {
@@ -80,7 +84,7 @@ public class FullscreenVideoToggle : MonoBehaviour
             fullscreenButton.onClick.AddListener(Toggle);
 
         // Subscribe to Vuforia tracking events
-        _observer = FindFirstObjectByType<Observer>();
+        _observer = observer != null ? observer : FindFirstObjectByType<Observer>();
         if (_observer != null)
         {
             _observer.OnTargetFound.AddListener(OnTrackingFound);
@@ -364,7 +368,6 @@ public class FullscreenVideoToggle : MonoBehaviour
 
         _controlsRoot.SetActive(false);
     }
-
     void UpdateControls()
     {
         if (_videoPlayer == null) return;

@@ -69,6 +69,9 @@ public class GPSLocationProvider : MonoBehaviour
     public float HorizontalAccuracy { get; private set; }
     /// <summary>Degrees clockwise from true north that the top of the phone points.</summary>
     public float TrueHeading { get; private set; }
+    /// <summary>True when TrueHeading is live (compass running and reporting), or faked in the Editor.</summary>
+    public bool HasHeading =>
+        UsingFake || (Input.compass.enabled && Input.compass.timestamp > 0 && CurrentState == State.Running);
     /// <summary>Realtime (Time.realtimeSinceStartup) of the last position update.</summary>
     public float LastUpdateTime { get; private set; }
 

@@ -31,11 +31,16 @@
 //    then.
 //  - Any MapLocationMarker under MapPanel is copied onto the fullscreen map.
 //    It follows pinch/pan and keeps the dot a constant on-screen size.
+//  - With a DirectionsController in the scene (CampusNavigator adds one),
+//    the fullscreen map also shows a code tag on each building and the
+//    direction line + pin. Tap a tag to navigate there. Touches and the back
+//    button on CampusNavigator's UI (drawn above this overlay) are ignored.
 //  - All animation uses unscaled time, so it still works while
 //    PlayPauseToggle has Time.timeScale at 0.
 // ─────────────────────────────────────────────────────────────────────────────
 
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -90,6 +95,19 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
     readonly System.Collections.Generic.List<MapLocationMarker> _markerCopies =
         new System.Collections.Generic.List<MapLocationMarker>();
 
+    // Directions on the fullscreen map
+    class BuildingTag
+    {
+        public CampusDestinations.Building building;
+        public RectTransform rt;
+        public Image bg;
+    }
+    DirectionsController _directions;
+    DirectionLine        _fullscreenLine;
+    readonly System.Collections.Generic.List<BuildingTag> _tags =
+        new System.Collections.Generic.List<BuildingTag>();
+    const float TAG_HEIGHT = 52f, PIN_SIZE = 46f;
+
     bool      _isOpen;
     Coroutine _transition;
     Coroutine _resetTween;
@@ -98,7 +116,7 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
     // Gesture state
     float   _zoom = 1f;
     bool    _tapCandidate;
-    bool    _touchOnClose;
+    bool    _touchIgnored; // began on the close button or on CampusNavigator's UI
     float   _tapStartTime;
     Vector2 _tapStartPos;
     float   _lastTapTime = -10f;
@@ -164,6 +182,7 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
         _contentImage.sprite = sourceImage.sprite;
         foreach (var m in _markerCopies)
             if (m != null) m.SetMapImage(_contentImage, keepConstantSize: true);
+        EnsureDirections();
         if (!_overlayRoot.activeSelf)
         {
             _group.alpha      = 0f;
@@ -244,7 +263,8 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
     {
         if (!_isOpen || _overlayRoot == null) return;
 
-        if (Input.GetKeyDown(KeyCode.Escape)) // Android back button
+        // Android back button (unless it's closing CampusNavigator's sheet).
+        if (Input.GetKeyDown(KeyCode.Escape) && !CampusNavigator.HandlesBack)
         {
             Close();
             return;
@@ -256,6 +276,8 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
             FitContent();
             ClampPan();
         }
+
+        UpdateTags();
 
         if (Input.touchCount > 0)
             HandleTouches();
@@ -292,8 +314,8 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
         switch (t.phase)
         {
             case TouchPhase.Began:
-                _touchOnClose = IsOverCloseButton(t.position);
-                if (_touchOnClose) { _tapCandidate = false; break; }
+                _touchIgnored = IsOverCloseButton(t.position) || CampusNavigator.IsScreenPointOverUI(t.position);
+                if (_touchIgnored) { _tapCandidate = false; break; }
                 _tapCandidate = true;
                 _tapStartTime = Time.unscaledTime;
                 _tapStartPos  = t.position;
@@ -302,7 +324,7 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
             case TouchPhase.Moved:
                 if (_tapCandidate && (t.position - _tapStartPos).sqrMagnitude > DragThresholdSqr())
                     _tapCandidate = false;
-                if (!_tapCandidate && !_touchOnClose)
+                if (!_tapCandidate && !_touchIgnored)
                 {
                     CancelReset();
                     Pan(ScreenDeltaToLocal(t.position - t.deltaPosition, t.position));
@@ -325,8 +347,10 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
     {
         Vector2 mouse = Input.mousePosition;
 
+        bool overNavigator = CampusNavigator.IsScreenPointOverUI(mouse);
+
         float scroll = Input.mouseScrollDelta.y;
-        if (Mathf.Abs(scroll) > 0.01f)
+        if (Mathf.Abs(scroll) > 0.01f && !overNavigator)
         {
             CancelReset();
             ZoomAround(mouse, Mathf.Exp(scroll * mouseZoomSpeed));
@@ -334,7 +358,7 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (IsOverCloseButton(mouse)) return;
+            if (IsOverCloseButton(mouse) || overNavigator) return;
             _mouseDragging = true;
             _tapCandidate  = true;
             _tapStartTime  = Time.unscaledTime;
@@ -372,12 +396,13 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
         }
         _lastTapTime = Time.unscaledTime;
         _lastTapPos  = pos;
+        TrySelectBuildingAt(pos);
     }
 
     void ResetGestures()
     {
         _tapCandidate  = false;
-        _touchOnClose  = true; // ignore any touch already down when opening
+        _touchIgnored  = true; // ignore any touch already down when opening
         _mouseDragging = false;
         _lastTapTime   = -10f;
     }
@@ -566,6 +591,106 @@ public class MapFullscreenToggle : MonoBehaviour, IPointerClickHandler
             marker.SetMapImage(_contentImage, keepConstantSize: true);
             _markerCopies.Add(marker);
         }
+    }
+
+    // ── Directions on the fullscreen map ──────────────────────────────────────
+
+    /// <summary>Adds building tags and the direction line/pin once a DirectionsController exists.</summary>
+    void EnsureDirections()
+    {
+        if (_content == null) return;
+        if (_directions == null) _directions = FindFirstObjectByType<DirectionsController>();
+        if (_directions == null) return;
+
+        if (_tags.Count == 0) BuildTags();
+        if (_fullscreenLine == null)
+        {
+            MapLocationMarker marker = _markerCopies.Count > 0 ? _markerCopies[0] : null;
+            _fullscreenLine = DirectionLine.Create(_contentImage, marker, _directions, CampusNavigator.AccentColor,
+                                                   thickness: 10f, pinSize: PIN_SIZE, constantSize: true);
+        }
+        UpdateTags();
+    }
+
+    void BuildTags()
+    {
+        foreach (var b in _directions.Buildings)
+        {
+            string code = string.IsNullOrEmpty(b.shortCode) ? b.number.ToString() : b.shortCode;
+
+            RectTransform tag = MakeRect("Tag " + code, _content);
+            tag.anchorMin = tag.anchorMax = tag.pivot = new Vector2(0.5f, 0.5f);
+            tag.SetAsFirstSibling(); // under the line, pin and GPS dot
+
+            Image bg = tag.gameObject.AddComponent<Image>();
+            bg.sprite = RuntimeUISprites.RoundedRect;
+            bg.type   = Image.Type.Sliced;
+            bg.pixelsPerUnitMultiplier = 32f / (TAG_HEIGHT * 0.5f); // pill shape
+            bg.raycastTarget = false;
+
+            RectTransform textRt = MakeRect("Code", tag);
+            Stretch(textRt);
+            var text = textRt.gameObject.AddComponent<TextMeshProUGUI>();
+            text.text      = code;
+            text.fontSize  = 30f;
+            text.fontStyle = FontStyles.Bold;
+            text.color     = Color.white;
+            text.alignment = TextAlignmentOptions.Center;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.raycastTarget = false;
+
+            tag.sizeDelta = new Vector2(Mathf.Max(TAG_HEIGHT, text.preferredWidth + 28f), TAG_HEIGHT);
+            _tags.Add(new BuildingTag { building = b, rt = tag, bg = bg });
+        }
+    }
+
+    /// <summary>Places tags on their buildings at a constant on-screen size; the destination's sits above its pin.</summary>
+    void UpdateTags()
+    {
+        if (_directions == null || _tags.Count == 0) return;
+        Vector2 imageSize = _directions.calibration != null
+            ? (Vector2)_directions.calibration.imageSize
+            : (Vector2)_directions.destinations.imageSize;
+        Color idle = new Color(0.04f, 0.08f, 0.16f, 0.85f);
+
+        foreach (var t in _tags)
+        {
+            if (!_directions.TryGetBuildingPixel(t.building, out Vector2 px))
+            {
+                t.rt.gameObject.SetActive(false);
+                continue;
+            }
+            t.rt.gameObject.SetActive(true);
+
+            bool selected = t.building == _directions.Selected;
+            Vector2 local = MapLocationMarker.PixelToMapLocal(_contentImage, px, imageSize, out _);
+            if (selected) local.y += (PIN_SIZE + TAG_HEIGHT) * 0.5f / _zoom + 6f / _zoom;
+
+            t.rt.anchoredPosition = MapLocationMarker.MapLocalToAnchored(t.rt, _contentImage, local);
+            t.rt.localScale = Vector3.one / _zoom;
+            t.bg.color = selected ? CampusNavigator.AccentColor : idle;
+        }
+    }
+
+    /// <summary>Selects the building whose tag is under (or nearest to, within a finger's reach of) a tap.</summary>
+    bool TrySelectBuildingAt(Vector2 screenPos)
+    {
+        if (_directions == null || _tags.Count == 0) return false;
+
+        float reach = Mathf.Max(48f, Screen.dpi > 0f ? Screen.dpi * 0.2f : 60f); // ~5 mm
+        float best  = reach * reach;
+        CampusDestinations.Building hit = null;
+        foreach (var t in _tags)
+        {
+            if (!t.rt.gameObject.activeSelf) continue;
+            if (RectTransformUtility.RectangleContainsScreenPoint(t.rt, screenPos, null)) { hit = t.building; break; }
+            float d = (RectTransformUtility.WorldToScreenPoint(null, t.rt.position) - screenPos).sqrMagnitude;
+            if (d < best) { best = d; hit = t.building; }
+        }
+
+        if (hit == null) return false;
+        _directions.Select(hit);
+        return true;
     }
 
     void BuildCloseButton(RectTransform parent)

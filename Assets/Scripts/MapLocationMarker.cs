@@ -112,6 +112,9 @@ public class MapLocationMarker : MonoBehaviour
             Debug.LogWarning("[MapLocationMarker] No MapCalibration assigned — marker stays hidden.", this);
     }
 
+    /// <summary>True while the marker has a position on the map (its smoothed anchoredPosition is current).</summary>
+    public bool IsShowing { get; private set; }
+
     /// <summary>Re-targets the marker onto another map Image (used for the fullscreen copy).</summary>
     public void SetMapImage(Image image, bool keepConstantSize)
     {
@@ -150,6 +153,7 @@ public class MapLocationMarker : MonoBehaviour
         float parentScale = ParentScale();
         _rt.localScale = compensateParentScale ? Vector3.one / parentScale : Vector3.one;
 
+        IsShowing = visible;
         _group.alpha = Mathf.MoveTowards(_group.alpha, visible ? 1f : 0f, fadeSpeed * dt);
         if (!visible && _group.alpha <= 0f)
             _hasFix = false; // next appearance snaps into place
@@ -172,34 +176,48 @@ public class MapLocationMarker : MonoBehaviour
         if (float.IsNaN(px.x) || !calibration.IsInsideImage(px, edgeMargin))
             return false;
 
-        Rect drawn = DisplayedRect(mapImage);
-        Vector2 size = calibration.imageSize;
-        Vector2 uv = new Vector2(px.x / size.x, 1f - px.y / size.y); // y-down → y-up
-        Vector2 local = new Vector2(drawn.xMin + uv.x * drawn.width, drawn.yMin + uv.y * drawn.height);
-
-        pixelsToLocal = drawn.width / size.x;
-        anchoredPos = MapLocalToAnchored(local);
+        Vector2 local = PixelToMapLocal(mapImage, px, calibration.imageSize, out pixelsToLocal);
+        anchoredPos = MapLocalToAnchored(_rt, mapImage, local);
         return true;
     }
 
-    /// <summary>Converts a point in mapImage's local space to this marker's anchoredPosition.</summary>
-    Vector2 MapLocalToAnchored(Vector2 mapLocal)
+    // ── Shared map-space helpers (also used by DirectionLine) ─────────────────
+
+    /// <summary>
+    /// Image pixel (x right, y DOWN from top-left of a <paramref name="imageSize"/>
+    /// image) → point in the map Image's local space (y up), within the area
+    /// the sprite is actually drawn in. <paramref name="pixelsToLocal"/> is the
+    /// local units per image pixel.
+    /// </summary>
+    public static Vector2 PixelToMapLocal(Image map, Vector2 pixel, Vector2 imageSize, out float pixelsToLocal)
     {
-        RectTransform parent = _rt.parent as RectTransform;
-        RectTransform map    = mapImage.rectTransform;
-        if (parent != map)
+        Rect drawn = DisplayedRect(map);
+        Vector2 uv = new Vector2(pixel.x / imageSize.x, 1f - pixel.y / imageSize.y); // y-down → y-up
+        pixelsToLocal = drawn.width / imageSize.x;
+        return new Vector2(drawn.xMin + uv.x * drawn.width, drawn.yMin + uv.y * drawn.height);
+    }
+
+    /// <summary>
+    /// Point in <paramref name="map"/>'s local space → anchoredPosition for
+    /// <paramref name="target"/>, whose anchors must be centred (min = max = 0.5).
+    /// </summary>
+    public static Vector2 MapLocalToAnchored(RectTransform target, Image map, Vector2 mapLocal)
+    {
+        RectTransform parent = target.parent as RectTransform;
+        RectTransform space  = map.rectTransform;
+        if (parent != space)
         {
-            // Marker isn't a direct child of the map: go through world space.
-            Vector3 world = map.TransformPoint(mapLocal);
+            // Target isn't a direct child of the map: go through world space.
+            Vector3 world = space.TransformPoint(mapLocal);
             mapLocal = parent != null ? (Vector2)parent.InverseTransformPoint(world) : (Vector2)world;
-            map = parent;
+            space = parent;
         }
         // Anchors are centred, so anchoredPosition is relative to the parent rect's centre.
-        return map != null ? mapLocal - map.rect.center : mapLocal;
+        return space != null ? mapLocal - space.rect.center : mapLocal;
     }
 
     /// <summary>The part of the Image's rect the sprite is actually drawn in (letterboxed with Preserve Aspect).</summary>
-    static Rect DisplayedRect(Image image)
+    public static Rect DisplayedRect(Image image)
     {
         Rect r = image.rectTransform.rect;
         if (!image.preserveAspect || image.sprite == null) return r;

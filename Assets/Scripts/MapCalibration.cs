@@ -122,6 +122,26 @@ public class MapCalibration : ScriptableObject
         return DirectionAngle(Math.Sin(rad), Math.Cos(rad));
     }
 
+    /// <summary>
+    /// Inverse of <see cref="HeadingToImageAngle"/>: a direction on the image
+    /// (pixel delta, x right / y DOWN) → compass bearing in degrees clockwise
+    /// from true north, 0..360. For a plain rotated map this equals
+    /// (clockwise angle from image-up) − <see cref="RotationDegrees"/>.
+    /// </summary>
+    public float ImageDirectionToBearing(Vector2 pixelDelta)
+    {
+        EnsureSolved();
+        double dx = pixelDelta.x, dy = pixelDelta.y;
+        if (!_solved)
+            return Mathf.Repeat((float)(Math.Atan2(dx, -dy) * 180.0 / Math.PI), 360f); // assume north-up
+
+        // Invert the linear part [ax0 ax1; ay0 ay1] · (east, north) = (dx, dy).
+        double det = _ax[0] * _ay[1] - _ax[1] * _ay[0];
+        double east  = ( _ay[1] * dx - _ax[1] * dy) / det;
+        double north = (-_ay[0] * dx + _ax[0] * dy) / det;
+        return Mathf.Repeat((float)(Math.Atan2(east, north) * 180.0 / Math.PI), 360f);
+    }
+
     /// <summary>Average image pixels per metre (geometric mean of the fit's axis scales).</summary>
     public float PixelsPerMetre
     {

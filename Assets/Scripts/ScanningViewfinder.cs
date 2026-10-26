@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using TMPro;
 
 public class ScanningViewfinder : MonoBehaviour
@@ -17,32 +19,49 @@ public class ScanningViewfinder : MonoBehaviour
     public string scanningText = "Scan the front of the pamphlet";
     public string foundText    = "Target found!";
 
-    [Header("Buttons to hide while scanning")]
+    [Header("Image targets")]
+    [Tooltip("Observers to watch. Empty = every Observer in the scene. The viewfinder hides " +
+             "when any target is found and returns only when all are lost.")]
+    public Observer[] observers;
+
+    [Header("Buttons to hide while scanning (optional)")]
     public GameObject buttonsContainer;
 
     Coroutine dotCoroutine;
     Coroutine cornerCoroutine;
     bool found = false;
 
+    readonly HashSet<Observer> foundTargets = new HashSet<Observer>();
+    readonly List<(Observer observer, UnityAction onFound, UnityAction onLost)> subscriptions =
+        new List<(Observer, UnityAction, UnityAction)>();
+
     // Subscribe once for the object's lifetime so events still fire when this is inactive.
     void Start()
     {
-        var observer = FindFirstObjectByType<Observer>();
-        if (observer != null)
+        if (observers == null || observers.Length == 0)
+            observers = FindObjectsByType<Observer>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        foreach (var observer in observers)
         {
-            observer.OnTargetFound.AddListener(OnTargetFound);
-            observer.OnTargetLost.AddListener(OnTargetLost);
+            if (observer == null) continue;
+            var o = observer;
+            UnityAction onFound = () => OnTargetFound(o);
+            UnityAction onLost  = () => OnTargetLost(o);
+            o.OnTargetFound.AddListener(onFound);
+            o.OnTargetLost.AddListener(onLost);
+            subscriptions.Add((o, onFound, onLost));
         }
     }
 
     void OnDestroy()
     {
-        var observer = FindFirstObjectByType<Observer>();
-        if (observer != null)
+        foreach (var (observer, onFound, onLost) in subscriptions)
         {
-            observer.OnTargetFound.RemoveListener(OnTargetFound);
-            observer.OnTargetLost.RemoveListener(OnTargetLost);
+            if (observer == null) continue;
+            observer.OnTargetFound.RemoveListener(onFound);
+            observer.OnTargetLost.RemoveListener(onLost);
         }
+        subscriptions.Clear();
     }
 
     void OnEnable()
@@ -62,17 +81,26 @@ public class ScanningViewfinder : MonoBehaviour
         if (cornerCoroutine != null) { StopCoroutine(cornerCoroutine); cornerCoroutine = null; }
     }
 
-    void OnTargetFound()
+    void OnTargetFound(Observer observer)
     {
+        bool wasNoneFound = foundTargets.Count == 0;
+        foundTargets.Add(observer);
         found = true;
+        // Already hidden (another target is tracked): nothing to do, and an
+        // inactive object can't start coroutines.
+        if (!wasNoneFound || !isActiveAndEnabled) return;
+
         if (statusLabel) statusLabel.text = foundText;
         if (dotCoroutine != null) { StopCoroutine(dotCoroutine); dotCoroutine = null; }
         if (buttonsContainer != null) buttonsContainer.SetActive(true);
         StartCoroutine(HideAfterDelay(0.01f));
     }
 
-    void OnTargetLost()
+    void OnTargetLost(Observer observer)
     {
+        foundTargets.Remove(observer);
+        if (foundTargets.Count > 0) return; // another target is still tracked
+
         found = false;
         gameObject.SetActive(true); // triggers OnEnable: hides buttons, resets text, restarts coroutines
     }

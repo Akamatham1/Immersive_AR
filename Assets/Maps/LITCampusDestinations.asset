@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8174e753c40607c4281b51d2a36b0ebb, type: 3}
+  m_Name: LITCampusDestinations
+  m_EditorClassIdentifier: 
+  imageSize: {x: 1000, y: 670}
+  buildings:
+  - number: 1
+    name: Cecil Beeson
+    shortCode: CB
+    pixel: {x: 568, y: 224}
+  - number: 2
+    name: Technology Center
+    shortCode: TC
+    pixel: {x: 626, y: 289}
+  - number: 3
+    name: Eagles' Nest
+    shortCode: EN
+    pixel: {x: 488, y: 149}
+  - number: 4
+    name: ExxonMobil PATC
+    shortCode: 
+    pixel: {x: 484, y: 222}
+  - number: 5
+    name: Process Tech Inside Unit
+    shortCode: T2
+    pixel: {x: 462, y: 180}
+  - number: 6
+    name: Technical Arts IV
+    shortCode: TA4
+    pixel: {x: 483, y: 269}
+  - number: 7
+    name: Technical Arts V
+    shortCode: TA5
+    pixel: {x: 502, y: 310}
+  - number: 8
+    name: Szuch Multi-Purpose Center
+    shortCode: MPC
+    pixel: {x: 430, y: 520}
+  - number: 9
+    name: Tommy Williams ITC
+    shortCode: 
+    pixel: {x: 864, y: 261}
+  - number: 10
+    name: WAHTC
+    shortCode: 
+    pixel: {x: 666, y: 343}
+  - number: 11
+    name: Advanced Technology Center
+    shortCode: ATC
+    pixel: {x: 830, y: 144}

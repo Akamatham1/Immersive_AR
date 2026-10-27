@@ -61,6 +61,11 @@ public class DirectionsController : MonoBehaviour
     [Tooltip("Seconds between label refreshes.")]
     public float labelInterval  = 0.25f;
 
+    [Header("Navigation")]
+    [Tooltip("Selecting a destination starts navigation. Turn off to start it from a " +
+             "Start button (StartNavigation) instead.")]
+    public bool startOnSelect = true;
+
     /// <summary>Raised with the new destination (null = none).</summary>
     public event Action<CampusDestinations.Building> DestinationChanged;
 
@@ -70,6 +75,13 @@ public class DirectionsController : MonoBehaviour
 
     /// <summary>True while the user is within the arrival radius of the destination.</summary>
     public bool HasArrived { get; private set; }
+
+    /// <summary>
+    /// True once navigation to the selected destination has started (on
+    /// selection, or on StartNavigation() when startOnSelect is off). False
+    /// after arrival, EndNavigation(), ClearDestination() or selecting "None".
+    /// </summary>
+    public bool IsNavigating { get; private set; }
 
     /// <summary>Current status line ("TC — ~120 m · ~2 min", "You've arrived at …"), or null with no destination.</summary>
     public string StatusText { get; private set; }
@@ -112,6 +124,7 @@ public class DirectionsController : MonoBehaviour
         var list = destinations != null ? destinations.buildings : null;
         Selected = list != null && index >= 0 && index < list.Count ? list[index] : null;
         HasArrived = false;
+        IsNavigating = Selected != null && startOnSelect;
 
         if (dropdown != null && dropdown.value != index + 1)
             dropdown.SetValueWithoutNotify(index + 1);
@@ -126,6 +139,15 @@ public class DirectionsController : MonoBehaviour
         Select(building != null && destinations != null ? destinations.buildings.IndexOf(building) : -1);
 
     public void ClearDestination() => Select(-1);
+
+    /// <summary>Starts navigating to the selected destination (e.g. from a Start button).</summary>
+    public void StartNavigation()
+    {
+        if (Selected != null && !HasArrived) IsNavigating = true;
+    }
+
+    /// <summary>Ends navigation but keeps the selected destination.</summary>
+    public void EndNavigation() => IsNavigating = false;
 
     /// <summary>Destination in calibration image pixels (x right, y down).</summary>
     public bool TryGetDestinationPixel(out Vector2 pixel) => TryGetBuildingPixel(Selected, out pixel);
@@ -230,6 +252,7 @@ public class DirectionsController : MonoBehaviour
         HasArrived = straight <= ArrivalRadius;
         if (HasArrived)
         {
+            IsNavigating = false; // stays ended even if GPS drifts back out
             SetLabel($"You've arrived at {Selected.name}");
             return;
         }
